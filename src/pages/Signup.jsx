@@ -49,17 +49,17 @@ export default function Signup() {
                             onChange={ (e) => setFormValues({...formValues, [e.target.name]: e.target.value}) }
                         />
                         {
-                            showPassword && <input 
+                            showPassword && (<input 
                                 type="password" 
                                 placeholder='Password' 
                                 name='password' 
                                 value={formValues.password} 
                                 onChange={ (e) => setFormValues({...formValues, [e.target.name]: e.target.value}) }
                             />
-                        }
+                        )}
                         
                         {
-                            !showPassword && <button onClick={() => {setShowPassword(true)}} >Get Started</button>
+                            !showPassword && (<button onClick={() => {setShowPassword(true)}} >Get Started</button>)
                         }
                         
                     </div>

@@ -1,19 +1,20 @@
 import {onAuthStateChanged, signInWithEmailAndPassword} from "firebase/auth";
 import React from 'react'
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
 import { firebaseAuth } from "../utils/firebase-config";
 
 export default function Login() {
-    const [showPassword, setShowPassword ] = useState(false)
+    const navigate = useNavigate();
     const [formValues, setFormValues] = useState({
         email: "",
         password: "",
     });
 
-    const handleSignIn = async () => {
+    const handleLogIn = async () => {
         try {
             const { email, password } = formValues;
             await signInWithEmailAndPassword(firebaseAuth, email, password)
@@ -24,7 +25,7 @@ export default function Login() {
     }
 
     onAuthStateChanged(firebaseAuth, (currentUser) => {
-        // if (currentUser) navigate("/")
+        if (currentUser) navigate("/")
     })
 
     return (
@@ -32,12 +33,31 @@ export default function Login() {
             <BackgroundImage />
             <div className="content">
                 <Header />
-                <div className="form-container flex-column a-center j-center">
+                <div className="form-container flex column a-center j-center">
                     <div className="form flex column a-center j-center">
                         <div className="title">
                             <h3>Login</h3> 
                         </div>
-                        <div className="container flex column"></div>
+                        <div className="container flex column">
+                            <input 
+                                type="email" 
+                                placeholder='Email Address' 
+                                name='email' 
+                                value={formValues.email} 
+                                onChange={ (e) => setFormValues({...formValues, [e.target.name]: e.target.value}) }
+                            />
+                            
+                            <input 
+                                type="password" 
+                                placeholder='Password' 
+                                name='password' 
+                                value={formValues.password} 
+                                onChange={ (e) => setFormValues({...formValues, [e.target.name]: e.target.value}) }
+                            />
+                            
+                            <button onClick={handleLogIn}>Log In</button>
+                         
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,51 +76,35 @@ const Container = styled.div`
         width: 100vw;
         display: grid;
         grid-template-rows: 15vh 85vh;
-        .body {
-            gap: 1rem;
-            .text {
-                gap: 1rem;
-                text-align: center;
-                font-size: 2rem;
-                h1 {
-                    padding: 0 20rem;
-                }
-            }
+        .form-container {
+            gap: 2rem;
+            height: 85vh;
             .form {
-                display: grid;
-                grid-template-columns: ${({showPassword})=>showPassword ? "1fr 1fr" : "2fr 1fr"} ;
-                width: 60%;
-
-                input {
-                    color: black;
-                    border: none;
-                    padding: 1.5rem;
-                    font-size: 1.2rem;
-                    border: 1px solid black;
-                    &:focus {
-                        outline: none;
+                padding: 2rem;
+                background-color: #000000b0;
+                width: 400px;
+                gap: 2rem;
+                color: white;
+                .container {
+                    gap: 2rem;
+                    input {
+                        padding: 0.5rem 1rem;
+                        width: 15rem;
+                    }
+                    button {
+                        padding: 0.5rem 1rem;
+                        background-color: #e50914;
+                        border: none;
+                        cursor: pointer;
+                        color: white;
+                        border-radius: 0.2rem;
+                        font-weight: bolder;
+                        font-size: 1.05rem;
                     }
                 }
-                button {
-                    padding: 0.5rem 1rem;
-                    background-color: #e50914;
-                    border: none;
-                    cursor: pointer;
-                    color: white;
-                    font-weight: bolder;
-                    font-size: 1.05rem;
-                }
-            }
-            button {
-                padding: 0.5rem 1rem;
-                background-color: #e50914;
-                border: none;
-                cursor: pointer;
-                color: white;
-                border-radius: 0.2rem;
-                font-weight: bolder;
-                font-size: 1.05rem;
+
             }
         }
+       
     }
 `;
