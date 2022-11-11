@@ -8,10 +8,27 @@ import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri"
 import { BsCheck } from "react-icons/bs"
 import { AiOutlinePlus } from "react-icons/ai"
 import { BiChevronDown } from "react-icons/bi"
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebaseAuth } from '../utils/firebase-config';
+import axios from 'axios';
 
-export default function Card({movieData, isLike = false}) {
+export default React.memo(function Card({movieData, isLike = false}) {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate()
+    const [email, setEmail] = useState(undefined)
+
+    onAuthStateChanged(firebaseAuth, (currentUser) => {
+        if (currentUser) setEmail(currentUser.email)
+        else navigate("/login")
+    })
+
+    const addToList = async () => {
+        try{
+            await axios.post("http://localhost:5000/api/user/add", {email, data:movieData})
+        }catch(err){
+            console.log(err)
+        }
+    }
 
     return (
         <Container 
@@ -47,7 +64,7 @@ export default function Card({movieData, isLike = false}) {
                                     <RiThumbUpFill title="like" />
                                     <RiThumbDownFill title="Dislike" />
                                     {
-                                        isLike ? (<BsCheck title="Remove From List" />) : (<AiOutlinePlus title="Add to my list" />)
+                                        isLike ? (<BsCheck title="Remove From List" />) : (<AiOutlinePlus title="Add to my list" onClick={addToList}/>)
                                     }
                                 </div>
 
@@ -70,7 +87,7 @@ export default function Card({movieData, isLike = false}) {
         </Container>
     )
 }
-
+)
 const Container = styled.div `
     max-width: 230px;
     width: 230px;

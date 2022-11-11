@@ -1,12 +1,12 @@
 import React from 'react'
 import CardSlider from './CardSlider'
 
-export default function Slider({movies}) {
+export default React.memo(function Slider({movies}) {
 
     const getMoviesFromRange = (from, to) => {
         return movies.slice(from, to)
     }
-
+    // console.log(movies)
     return (
         <div>
             <CardSlider title="Trending Now" data={getMoviesFromRange(0, 10)} />
@@ -17,4 +17,4 @@ export default function Slider({movies}) {
             <CardSlider title="Epics" data={getMoviesFromRange(50, 60)} />
         </div>
     )
-}
+})

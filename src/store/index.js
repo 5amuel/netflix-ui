@@ -23,16 +23,38 @@ export const getGenres = createAsyncThunk("netflix/genres", async() => {
 export const fetchMovies = createAsyncThunk(
     "netflix/trending", 
     async ({ type }, thunkApi) => {
-    const {
-        netflix: { genres },
-    } = thunkApi.getState();
+        
+        const {
+            netflix: { genres },
+        } = thunkApi.getState();
 
-    return getRawData(
-        `${TMBD_BASE_URL}/trending/${type}/week?api_key=${API_KEY}`,
-        genres, 
-        true
-    );
-    // return getRawData(`${TMBD_BASE_URL}/discover/${type}?api_key=${API_KEY}&with_genres=${genres}`)
+        return getRawData(
+            `${TMBD_BASE_URL}/trending/${type}/week?api_key=${API_KEY}`,
+            genres, 
+            true
+        );
+    }
+);
+
+export const fetchDataByGenre = createAsyncThunk(
+    "netflix/moviesByGenres", 
+    async ({ genre, type }, thunkApi) => {
+        const {
+            netflix: { genres },
+        } = thunkApi.getState();
+
+        return getRawData(
+            `${TMBD_BASE_URL}/discover/${type}?api_key=${API_KEY}&with_genres=${genre}`,
+            genres
+        );
+    }
+);
+
+export const getUsersLikedMovies = createAsyncThunk(
+    "netflix/getLiked", 
+    async (email) => {
+    const { data:{ movies } } = await axios.get(`http://localhost:5000/api/user/liked/${email}`);
+    return movies
 });
 
 const createArrayFromRawData = (array, moviesArray, genres) => {
@@ -60,8 +82,8 @@ const getRawData = async (api, genres, paging) => {
             `${api}${ paging ? `&page=${i}` : ""}`
         );
         createArrayFromRawData(results, moviesArray, genres);
-        return moviesArray;
     }
+    return moviesArray;
 }
 
 
@@ -75,7 +97,14 @@ const NetflixSlice = createSlice({
         });
         builder.addCase(fetchMovies.fulfilled, (state, action) => {
             state.movies = action.payload;
+        });
+        builder.addCase(fetchDataByGenre.fulfilled, (state, action) => {
+            state.movies = action.payload;
+        });
+        builder.addCase(getUsersLikedMovies.fulfilled, (state, action) => {
+            state.movies = action.payload;
         })
+
     },
 
 })
@@ -85,3 +114,5 @@ export const store =  configureStore ({
         netflix: NetflixSlice.reducer,
     },
 })
+
+export const { setGenres, setMovies } = NetflixSlice.actions;

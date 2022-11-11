@@ -25,7 +25,7 @@ const Netflix = () => {
     useEffect(() => {
         if( genresLoaded ) dispatch(fetchMovies({ type: "all" }))
      }, [genresLoaded, dispatch]);
-    console.log(movies)
+     
     window.onscroll = () => {
         setIsScrolled(window.pageYOffset === 0 ? false : true);
         return () => (window.onscroll = null)
